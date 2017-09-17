@@ -23,6 +23,27 @@ SQL query used for mal-pacakges:
         'urllib')
 
 
+SQL query used to ignore mirror-to-mirror traffic:L
+
+    SELECT
+      timestamp,
+      file.project AS package,
+      country_code,
+      file.version AS version
+    FROM ( (TABLE_DATE_RANGE([the-psf:pypi.downloads], TIMESTAMP('2016-01-22'), TIMESTAMP('2017-09-15'))) )
+    WHERE
+      file.project IN ( 'acqusition',
+        'apidev-coop',
+        'bzip',
+        'crypt',
+        'django-server',
+        'pwd',
+        'setup-tools',
+        'telnet',
+        'urlib3',
+        'urllib')
+    AND details.installer.name NOT IN ('bandersnatch')
+
 SQL query used for good dopplegangers:
 
     SELECT

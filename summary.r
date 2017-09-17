@@ -9,7 +9,7 @@
 #'     highlight: monochrome
 #' ---
 #+ init, include=FALSE
-knitr::opts_chunk$set(message = TRUE, warning = TRUE, dev="png",
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, dev="png",
                       fig.retina = 2, fig.width = 10, fig.height = 6)
 
 #+ libs
@@ -47,6 +47,25 @@ ggplot(pypi_daily_summary) +
        title="PyPI Mal-package exposure outlined in <www.nbu.gov.sk/skcsirt-sa-20170909-pypi>",
        subtitle="Daily total downloads — sourced via <bigquery.cloud.google.com/table/the-psf:pypi.downloads>\nNote free Y scales.") +
   theme_ipsum_rc(grid="Y", strip_text_face = "bold", axis_text_size = 9)
+
+#+ sans_bandersnatch_data
+#' Read in the data
+pypi_sb <- read_csv(file.path(root, "data", "sans-bandersnatch.csv.gz"),
+                 col_types = .pypi_cols)
+pypi_sb <- mutate(pypi_sb, day = as.Date(substr(timestamp, 1, 10)))
+count(pypi_sb, package, day) -> pypi_sb_daily_summary
+
+#+ download_counts_per_day_sans_bandersnatch, fig.width=11, fig.height=7.5, fig.retina=2
+ggplot(pypi_sb_daily_summary) +
+  geom_segment(aes(day, n, xend=day, yend=0), size=0.33, color="#4575b4") +
+  scale_x_date(limits=range(pypi_sb_daily_summary$day), expand=c(0,0),
+               date_breaks="6 weeks", date_labels = "%Y\n%b\nWk: %U") +
+  facet_wrap(~package, scales="free") +
+  labs(x=NULL, y="# Downloads/Day",
+       title="PyPI Mal-package exposure outlined in <www.nbu.gov.sk/skcsirt-sa-20170909-pypi>",
+       subtitle="PyPI mirror seed/tranfers not included\nDaily total downloads — sourced via <bigquery.cloud.google.com/table/the-psf:pypi.downloads>\nNote free Y scales.") +
+  theme_ipsum_rc(grid="Y", strip_text_face = "bold", axis_text_size = 9)
+
 
 #+ dopple_data
 
